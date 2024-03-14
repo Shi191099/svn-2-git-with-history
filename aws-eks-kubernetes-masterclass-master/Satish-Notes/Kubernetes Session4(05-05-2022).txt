@@ -1,0 +1,310 @@
+==========================================================================
+Deployments:
+============
+->Deployment is an object used to create the POD's only like a ReplicationController
+->Deployment contains the features as follows:
+
+                    =>ReplicationController(replicas)
+                    =>Upgrades (or) Rollout
+                    =>Rollback
+                    =>Scaleup & Scaledown
+                    =>Pause & Resume
+
+-----------------------------------------------------
+POD->App1->v1 =====>v2  ==>Without Any Downtime
+
+-----------------------------------
+Note:
+-------
+=>Deployments will be used to perform the following actions:
+
+           ->ugrading the running applications of Cluster from one version to other version
+           ->upgrading will done with zero downtime
+           ->Rollback upgrade to previous stable release
+           ->upgrade sequentially one after the other
+           ->Pause & Resume the Upgrade Process
+
+=====================================================================
+ CRUD Operations on the Deployments using YAML Language/File:
+-------------------------------------------------------------------------------------
+->we can create the Deployments using "Manifest file" with YAML Language
+->A file in which we can write a YAML Code is known as "Manifest file"/"Config file"
+
+writing the Manifest file using YAML Code to creat a Deployment:
+------------------------------------------------------------------------------------
+nginx-deploy.yaml
+------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:                                #--->Details of the Deployment
+      name: nginx-deploy
+      labels:
+         app:nginx-app
+spec:
+    replicas: 3                          #--->Represents number of POD's to be run in the Cluster
+    selector:
+        matchLabels:
+             app: nginx-app             #--->used to associate the Deployment with POD
+    template:
+        metadata:                       #--->Details of the POD 
+              name: nginx-pod
+              labels:
+                 app: nginx-app
+        spec:                              #-->Details of the Container runs inside the POD
+            containers:
+            -   name: nginx-container
+                image: nginx:1.7.9
+                ports:
+                -   containerPort: 80
+
+---------------------------------------------------------------------------------------------------
+=>Creating(C) the Deployment using YAML File
+
+         kubectl create -f nginx-deploy.yaml
+
+=>Reading(R) the POD's created using Deployment
+
+        kubectl get pods
+
+                  (or)
+
+       kubectl get po -l app=nginx-app    #--->reading the Pods with labels
+
+                 (or)
+
+      kubectl get po -l app=nginx-app -o wide      #----->complete details about Pods
+
+
+=>Reading(R) the Deployment
+
+      kubectl get deploy nginx-deploy
+
+      kubectl describe deploy nginx-deploy     #---->getting details about Deployment
+
+==========================================================================
+ScalingUp the Pods/Application Instances using Deployment:
+-----------------------------------------------------------------------------------------
+
+     kubectl scale deploy nginx-deploy --replicas=5     #--->scaleup the pods to 5 instances
+
+     kubectl get deploy nginx-deploy              #---->checking the rc for increased instances/pods
+
+     kubectl get po -l app=nginx-app -o wide          #---->checking the running pods with details
+
+     
+=========================================================================
+ScalingDown the Pods/Application Instances using Deployment:
+----------------------------------------------------------------------------------------------
+
+      kubectl scale rc nginx-deploy --replicas=1   #--->scaledown the pods to 3 instances
+
+      kubectl get rc nginx-deploy              #---->checking the rc for increased instances/pods
+
+     kubectl get po -l app=nginx-app -o wide          #---->checking the running pods with details
+
+=========================================================================
+=>Deleting(D) the Deployment:
+----------------------------------------------------
+
+   kubectl delete -f nginx-deploy.yaml 
+
+   kubectl get deploy nginx-deploy
+     (no resources found)
+
+   kubectl get po -l app=nginx-app
+     (no resource found)
+
+-----------------------------------------------
+Note:
+-------
+->If we delete the Deployment then all the pods under that controller also will be deleted
+
+
+============================================================================
+Update/Rollout & RollBack of Deployments:
+----------------------------------------------
+=>Update the nginx:1.7.9 image to new version nginx:1.9.1 of nginx-deploy
+
+                      nginx:1.7.9 -------------> nginx:1.9.1
+ 
+   Command to update:
+   ----------------------------
+
+         kubectl set image deploy nginx-deploy nginx-container=nginx:1.9.1
+
+                                            (or)
+
+        kubectl edit deploy nginx-deploy
+
+  To check rollout/update status:
+  ----------------------------------------
+
+          kubectl rollout status deploy/nginx-deploy
+
+          kubectl get deploy nginx-deploy
+
+-----------------------------------------------------------------------------------------
+=>RollBack the nginx:1.9.1 image to old version nginx:1.7.1 of nginx-deploy
+
+                      nginx:1.9.1 -------------> nginx:1.7.1
+
+    kubectl set image deploy nginx-deploy nginx-container=nginx:1.7.1
+
+                                            (or)
+
+    kubectl edit deploy nginx-deploy
+
+   To check rollout/update status:
+  ----------------------------------------
+
+          kubectl rollout status deploy/nginx-deploy
+
+          kubectl get deploy nginx-deploy
+
+=============================================================================
+POD ---------->Containers-------->Applications
+
+
+                                               
+                                   Web Application -------> Front-End  ========>POD --->172.16.18.1
+                                              |
+                                              |
+                                  Database Application --> Back-End  ========>POD --->172.16.18.2
+
+->Every Application that deployed in the form of POD of Kubernetes Cluster will have one IP Address & using that IP Address we can access the Application with in the Cluster only but not from outside of the Cluster(from Internet)
+->How does the front end application is exposed/accessed to the outside world(Internet)?
+->How do the front end app is connected to backend database?
+->If POD created then One IP Address will be assigned & if that POD dies & instead of that    POD a new POD will recreated with new IP Address,so to resolve POD IP Address changes    what we should do?
+->To address/resolve the above problems on the POD's we have a solution known as    "Services"                                         
+
+-----------------------------------------------------------------------
+Services:
+========
+->Services will be used to communicate the Pods with each in the Kuberenetes Cluster & will be used to expose or access the Front End Web Application POD to the outside world(Internet)
+->A Front End Web Application POD will communicate/Connect to the BackEnd Database Application with the help of Services
+->To address the Solution of IP Changes every time when the POD is recreated will be done with Services
+
+Types of Services:
+-----------------------
+->We have majorly three types of services as follows:
+
+                       1)Cluster IP
+
+                       2)NodePort
+
+                       3)LoadBalancer
+
+=============================================================================
+NodePort:
+-------------
+->NodePort Service will expose the FrontEnd POD to the outside world(Internet)
+->NodePort Service will export the Port of that Service to the Port of the Node in which the     POD runs is known as "NodePort"
+->NodePort ranges from 30000 to 32767
+->Then using the IP Address of the Node in which the POD runs & NodePort that is created    using NodePort Service will access the FrontEnd access from outside world,that is Internet
+->If NodePort Service associates with multiple POD's & those Pods may runs in same Node or    different of the Kubernetes Cluster
+->If those multiple Pods runs in same Node then using that Node IP Address & NodePort of    the service will be used to access those POD's
+->If those multiple Pods runs in different Nodes then using the different Nodes IP Addresses &    NodePorts created by the service will be used to access those Pods
+
+--------------------------------------------------------------------------------------------------------
+=>To create a NodePort Servce first the POD's should create in which to associate with the      Service
+=>To create a NodePort Service we can use the Manifest file as follows:
+
+writing the Manifest file using YAML Code to creat a Deployment for the POD:
+----------------------------------------------------------------------------------------------------
+nginx-deploy.yaml
+------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:                                #--->Details of the ReplicationController
+      name: nginx-deploy
+      labels:
+         app:nginx-app
+spec:
+    replicas: 3                          #--->Represents number of POD's to be run in the Cluster
+    selector:
+        matchLabels:
+             app: nginx-app             #--->used to associate the Deployment with POD
+    template:
+        metadata:                       #--->Details of the POD 
+              name: nginx-pod
+              labels:
+                 app: nginx-app
+        spec:                              #-->Details of the Container runs inside the POD
+            containers:
+            -   name: nginx-container
+                image: nginx:1.7.9
+                ports:
+                -   containerPort: 80
+
+------------------------------------------------------------------------------------------------------------
+writing the Manifest file using YAML Code to creat a NodePort Service:
+-------------------------------------------------------------------------------------------
+nginx-svc-np.yaml
+------------------------
+apiVersion :v1
+kind: Service
+metadata:                                   #--->details of the Service
+      name: my-service
+      labels:
+         app: nginx-app
+spec:                                     
+    selector:
+        app: nginx-app                   #--->used to associate the Service with Pod
+    type: NodePort                      #--->type of the service
+    ports:
+    -   nodePort: 31000
+        port: 80
+        targetPort: 80
+
+---------------------------------------------------------------------------------------------------------
+=>creating the Deployment to deploy the Pod
+
+         kubectl create -f nginx-deploy.yaml
+
+=>creating the Service
+
+        kubectl create -f nginx-svc-np.yaml
+
+=>To read the service
+
+        kubectl get service -l app=nginx-app
+
+=>To read the pod
+
+       kubectl get pod -o wide
+
+=>To describe the service
+
+      kubectl describe svc my-service
+
+--------------------------------------------------------------------------------------------------------
+Note:
+-------
+->After creating the Pod & associated with service & that Pod/Application will access in    different ways as follows:
+
+      =>Accessing the Application/Pod using Pod IP with in the Cluster
+
+                         curl http://10.240.2.148:80
+                                             -----------------
+                                                       |
+                                                   Pod IP
+
+      =>Accessing the Application/Pod using Service IP with in the Cluster
+
+                        curl http://10.97.148.44:80
+                                            -----------------
+                                                       |
+                                               service IP
+
+      =>Accessing the Application/Pod using Node IP(external IP) from outside world(Internet)
+
+            using Browser through Internet from anywhere:
+            -------------------------------------------------------------
+
+                          http://35.193.47.186:31000
+                                      ------------------- --------
+                                                   |                  |
+                                               Node IP       NodePort
+
+
+============================================================================

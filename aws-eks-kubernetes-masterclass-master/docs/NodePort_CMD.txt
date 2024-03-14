@@ -1,0 +1,58 @@
+NodePort Service
+
+-----------------------------------------------------------------
+Creating the Deployment to deploy the Pod
+   
+     kubectl create -f web-war.yaml
+
+Creating the Service
+ 
+     kubectl create -f webwar-svc.yaml
+
+to read the service
+ 
+     kubectl get service -l app=webwar-svc
+
+to read the pod
+
+      kubectl get pod -o wide
+
+to describe the service
+
+     kubectl get svc webwar-svc // kubectl describe svc webwar-svc
+
+---------------------------------------------------------------------
+
+Note:
+----
+
+After creating the pod & associated with service & the pod/application will access in different ways as follows:
+  
+   -> Accessing the Application/Pod using IP with in the cluster
+  
+          curl http:// 172.17.0.4:8090
+                      ------------
+                            | 
+                          POD IP
+
+   -> Accessing the application/Pod using Service IP with in the cluster
+            
+          curl http://10.96.40.255:8090
+                     ------------
+                            | 
+                          POD IP
+
+    -> Accessing the Application/Pod using Node IP (external IP) from outside world(Internet/ Browser)
+
+            
+           http://external IP:31000
+                  ----------- -----
+                        |       |
+                       Node IP  NodePort
+
+
+
+
+
+
+

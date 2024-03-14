@@ -1,0 +1,9 @@
+Labels = use for define, we tag it on objects(Pod or Node).use for quick reference.
+         with label 
+         
+Selectors = for tag and select that and see.
+            two type of selectors => 1. Equality based. 2. set based
+
+Replication = when we won't want to lose over data that time we use  replication controller it create a replica of pod, like humne 2 replica bnayi h or suddenly ek pod terminate ho jata h tb dusra pod create hone me thoda sa time lgta h bs usi k liye hm ise use krte h jha hm nhi chahte humara work 1 pal k liye b stop ho tb hm iska use krte h or replication controller equality based selector ko support krta h.
+
+vhi Replica set => Equality based or set based dono selector ko support krta h.

@@ -1,0 +1,61 @@
+#######################################################################
+
+follow step in each nodes
+-------------------------  
+
+  1  apt update -y
+    2  sudo apt-get update && sudo apt-get install docker.io && docker version && sudo systemctl enable docker && sudo systemctl status docker
+    3  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+    4  sudo apt-get install curl -y
+    5  history
+--------------------------------------------------------------------
+
+sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+sudo apt-get install kubeadm kubelet kubectl
+sudo apt-mark hold kubeadm kubelet kubectl
+
+--------------------------------------------------------------------
+Master node
+-----------
+
+kubeadm init
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+--------------------------------------------------------------
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.31.32.16:6443 --token kn9aki.bs96gpfl8fi6q3ii --discovery-token-ca-cert-hash sha256:cc5b89bf9b3b4df1cbaea068b0fe22e6a6218493c1abc0734493ec7bacd68e15
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
+
+CONFIGURE WORKER NODES (IN NODES)
+
+COPY LONG CODE PROVIDED MY MASTER IN NODE NOW LIKE CODE GIVEN BELOW
+
+e.g- kubeadm join 172.31.6.165:6443 --token kl9fhu.co2n90v3rxtqllrs --discovery-token-ca-cert-hash sha256:b0f8003d23dbf445e0132a53d7aa1922bdef8d553d9eca06e65c928322b3e7c0
+
+GO TO MASTER AND RUN THIS COMMAND
+kubectl get nodes

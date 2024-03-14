@@ -1,0 +1,143 @@
+Cluster IP:
+=========
+->Imagine that,you need to deploy one full fledge web application which consists of frontend    website and backend database,in which frontend website & backend database runs as a    Containerised Applications in the Kubernetes Cluster inside the Pods
+->So to provide communication between those Pods we require a Service known as       "Cluster IP" service
+->"Cluster IP" service will be used to provide the communication between the Pods with in       the kubernetes Cluster
+
+--------------------------------------------------------------------------------------------
+Example to check the Cluster IP service:
+---------------------------------------------------
+=>Guestbook web Application with Redis Database
+
+->To work with this example we should create the following objects in the Kubernetes Cluster
+
+           ->Deployment to create a FrontEnd GuestBook web app POD
+
+           ->Deployment to create a BackEnd  Redis Master Database POD
+
+          ->Cluster IP service to communicate the FrontEnd & Backend Pods
+
+          ->NodePort Service to expose the FrontEnd GusetBook App to the Outside World
+
+----------------------------------------------------------------------------------------------------------
+Deployment to create a BackEnd  Redis Master Database POD:
+--------------------------------------------------------------------------------
+redis-master-deploy.yaml
+---------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+      name: redis-master
+      labels:
+          app: redis
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+              app: redis
+              role: master
+              tier: backend
+    template:
+        metadata:
+              labels:
+                  app: redis
+                  role: master
+                  tier: backend
+        spec:
+            containers:
+            -  name: master
+                image: k8s.gcr.io/redis:e2e
+                resources:
+                    requests:
+                        cpu: 100m
+                        memory: 100mi
+                ports:
+                -   containerPort: 6379
+
+-----------------------------------------------------------------------------------------------------------
+Deployment to create a FrontEnd GuestBook web app POD:
+-----------------------------------------------------------------------------
+guestbook-deploy.yaml
+------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+      name: frontend-app
+      labels:
+          app: guestbook
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: guestbook
+            tier: frontend
+    template:
+        metadata:
+              labels:
+                  app: guestbook
+                  tier: frontend
+        spec:
+            containers:
+            -  name: php-redis
+                image: gcr.io/google-samples/gb-frontend:v4
+                resources:
+                    requests:
+                        cpu: 100m
+                        memory: 100mi
+                ports:
+                -   containerPort: 80
+
+
+---------------------------------------------------------------------------------------------------
+Cluster IP service to communicate the FrontEnd & Backend Pods:
+------------------------------------------------------------------------------------
+redis-master-service.yaml
+---------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+      name: redis-master-svc
+      labels:
+         app: redis
+         role: master
+         tier: backend
+spec:
+    ports:
+    -   port: 6379
+        targetport: 6379
+    type: ClusterIP
+    selector:
+        app: redis
+        role: master
+        tier: backend
+
+---------------------------------------------------------------------------------------------------------------
+Creating the BackEnd Redis Master POD & FrontEnd GuestBook App POD:
+-----------------------------------------------------------------------------------------------
+
+  kubectl create -f redis-master-deploy.yaml
+
+  kubectl create -f guestbook-deploy.yaml
+
+
+Creating the ClusterIP Service:
+---------------------------------------
+
+  kubectl create -f redis-master-service.yaml
+
+Displaying the POD's & Services:
+------------------------------------------
+
+  kubectl get po -l tier=backend
+
+  kubectl get po -l tier=frontend
+
+  kubectl get svc -l tier=backend
+
+  kubectl describe svc redis-master-svc
+ 
+------------------------------------------------------------------------------------------------------------------
+========================================================================================================
+
+
+

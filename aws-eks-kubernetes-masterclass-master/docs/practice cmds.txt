@@ -1,0 +1,127 @@
+  1 curl -V
+   2 curl -I www.google.com
+   3 curl -I www.google.com
+   4 cd C:\Users\Minfy\Desktop\DevOps-Practice\Kubernetes\Pod_yaml\
+   5 minikube start
+   6 curl https://google.com
+   7 curl https://www.google.com
+   8 kubectl get pods
+   9 kubectl get pods -o wide
+  10 kubectl get service webwar-svc
+  11 ping 10.96.40.255
+  12 ping 10.96.40.255:31000
+  13 ping 172.17.0.4
+  14 ping www.google.com
+  15 curl
+  16 curl --version
+  17 curl -V
+  18 Get-Alias -Name curl
+  19 Get-Command curl
+  20 Get-Command curl.exe
+  21 curl.exe
+  22 curl.exe --help
+  23 kubectl get pods
+  24 kubectl get service webwar-svc
+  25 curl http://10.96.40.255
+  26 curl.exe http://10.96.40.255
+  27 curl.exe http://10.96.40.255:31000
+  28 kubectl get pods -o wide
+  29 curl.exe http://172.17.0.2:8090
+  30 env | grep POD_IP
+  31 kubectl get pods -o wide
+  32 kubectl get service webwar-svc
+  33 kubectl expose pod webwar-7554b8545c-gjl9r --name=webwar-svc --port=90 --type=NodePort
+  34 kubectl expose pod webwar-7554b8545c-gjl9r --name=webwar-svc1 --port=90 --type=NodePort
+  35 kubectl get service svc
+  36 kubectl get service
+  37 kubectl describe services webwar-svc1
+  38 Ip address
+  39 ip address
+  40 ip add
+  41 ifconfig
+  42 ipconfig
+  43 kubectl get service
+  44 kubectl describe services webwar-svc1
+  45 kubectl get pods
+  46 kubectl get service webwar-svc
+  47 kubectl describe services webwar-svc
+  48 kubectl get service webwar-svc
+  49 kubectl get pod -o wide
+  50 cd ..\..\..\MinfyDocs\K8s\Docs\
+  51 dir
+  52 kubectl create -f .\nginx-deploy.yaml -n=test1
+  53 kubectl get pod -o wide
+  54 kubectl create -n=nginx
+  55 kubectl create ns=nginx
+  56 kubectl create namespace ns=nginx
+  57 kubectl create namespace -ns=nginx
+  58 kubectl create namespace -h
+  59 kubectl create namespace nginx
+  60 kubectl get ns
+  61 kubectl create -f .\nginx-deploy.yaml -n=nginx
+  62 kubectl get pod -o wide
+  63 kubectl get pod -o wide -n=nginx
+  64 kubectl create -f .\nginx-svc-np.yaml -n=nginx
+  65 kubectl get pod -o wide -n=nginx
+  66 kubectl get pod -o wide -n=nginx
+  67 kubectl get service .\nginx-deploy.yaml
+  68 kubectl get service
+  69 kubectl get service -n=nginx
+  70 curl.exe http://10.111.50.127:32001
+  71 curl.exe http://10.111.50.127:32001
+  72 curl.exe http://10.111.50.127:32001
+  73 curl.exe http://10.96.40.255:31000
+  74 kubectl expose pod my-service --name=my-service-svc --port=91 --type=NodePort -n=nginx
+  75 kubectl expose pod -n=nginx my-service --name=my-service-svc --port=91 --type=NodePort -n=nginx
+  76 kubectl expose pod nginx-deploy-5cc98d45dc-4ccjq --name=my-service-svc --port=91 --type=NodePort -n=nginx
+  77 kubectl get service -n=nginx
+  78 kubectl expose pod nginx-deploy-5cc98d45dc-4ccjq --name=my-service-svc1 --port=80 --type=NodePort -n=nginx
+  79 kubectl get service -n=nginx
+  80 curl.exe https://10.111.4.52:91
+  81 curl.exe https://10.102.44.171:80
+  82 kubectl apply -f https://k8s.io/examples/service/load-balancer-example.yaml
+  83 kubectl get deployments hello-world
+  84 kubectl describe deployments hello-world
+  85 kubectl get replicasets
+  86 kubectl describe replicasets
+  87 kubectl expose deployment hello-world --type=LoadBalancer --name=my-service
+  88 kubectl get services my-service
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+  10  mkdir -p $HOME/.kube
+   11  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+   12  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+   13  kubectl get pods
+   14  kubectl get ns
+   15  kubectl get svc
+   16  kubectl get pods --all-namespaces
+   17  nano web-war.yaml
+   18  nano svc-web-war.yaml
+   19  kubectl create namespace web-war
+   20  kubectl get ns
+   21  kubectl create -f web-war.yaml
+   22  kubectl get pod
+   23  kubectl delete pod webwar-7554b8545c-r9pnt
+   24  kubectl delete -f web-war.yaml
+   25  kubectl get pod
+   26  kubectl create -f web-war.yaml -n=web-war
+   27  kubectl get pod -n=web-war
+   28  kubectl create -f svc-web-war.yaml -n=web-war
+   29  kubectl get service
+   30  kubectl get pod -o wide -n=web-war
+   31  kubectl get svc -n=web-war
+   32  kubectl get svc webwar-svc -n=web-war
+   33  kubectl get pod -o wide -n=web-war
+
+
+ kubectl delete po --all
+  67 kubectl get pods
+  68 kubectl create -f .\guestbook.yaml
+  69 kubectl get pods
+  70 kubectl get pods
+  71 kubectl get svc
+  72 kubectl get po -l tier=backend
+  73 kubectl get svc -l tier=backend
+  74 kubectl describe svc redis-master-svc

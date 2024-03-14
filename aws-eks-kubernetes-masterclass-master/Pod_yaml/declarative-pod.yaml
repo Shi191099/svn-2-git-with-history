@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: declarative-pod
+spec:
+  containers:
+  - name: memory-demo
+    image: nginx
+    ports:
+     - containerPort: 8090

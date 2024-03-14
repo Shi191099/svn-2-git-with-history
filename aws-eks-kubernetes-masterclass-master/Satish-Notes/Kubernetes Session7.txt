@@ -1,0 +1,210 @@
+LoadBalancer Service:
+==================
+->A LoadBalancer Service will receive requests from the end users & will transfer those requests to the Nodes using the NodePorts equally in which the Pods running & then the Containarised Applications of the Pods will accessible to the End Users
+->we cannot give the multiple IP Addresses of the Nodes in which the Pods runs directly to the End users,so to resolve this problem we can use LoadBalancer Service to redirect the requests to Nodes & the LoadBalancer Service will have one IP Address in which using this IP Address end user will send request & those requets will equally transfer to the Nodes in which the Pods runs
+
+-----------------------------------------------------------------------------
+Example to define the LoadBalancer Service:
+---------------------------------------------------------
+->Deployment to create a FrontEnd Pod
+->NodePort Service to expose the FrontEnd App/Pod to the outside world
+->LoadBalancer Service to transfer the requests from end user to the Nodes
+
+--------------------------------------------------------------------
+Deployment to create a FrontEnd Pod:
+-------------------------------------------------
+nginx-deploy.yaml
+------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:                                #--->Details of the ReplicationController
+      name: nginx-deploy
+      labels:
+         app:nginx-app
+spec:
+    replicas: 3                          #--->Represents number of POD's to be run in the Cluster
+    selector:
+        matchLabels:
+             app: nginx-app             #--->used to associate the Deployment with POD
+    template:
+        metadata:                       #--->Details of the POD 
+              name: nginx-pod
+              labels:
+                 app: nginx-app
+        spec:                              #-->Details of the Container runs inside the POD
+            containers:
+            -   name: nginx-container
+                image: nginx:1.7.9
+                ports:
+                -   containerPort: 80
+
+---------------------------------------------------------------------------------------------------------
+NodePort Service to expose the FrontEnd App/Pod to the outside world:
+---------------------------------------------------------------------------------------------
+nginx-svc-np.yaml
+------------------------
+apiVersion :v1
+kind: Service
+metadata:                                   #--->details of the Service
+      name: my-service-np
+      labels:
+         app: nginx-app
+spec:                                     
+    selector:
+        app: nginx-app                   #--->used to associate the Service with Pod
+    type: NodePort                      #--->type of the service
+    ports:
+    -   nodePort: 31000
+        port: 80
+        targetPort: 80
+
+----------------------------------------------------------------------------------------------------------
+LoadBalancer Service to transfer the requests from end user to the Nodes:
+------------------------------------------------------------------------------------------------
+nginx-svc-lb.yaml
+----------------------
+apiVersion: v1
+kind: Service
+metadata:
+      name: my-service-lb
+      labels:
+         app: nginx-app
+spec:
+    selector:
+        app: nginx-app
+    type: LoadBalancer
+    ports:
+    -   nodePort: 31000
+         port: 80
+         targetPort: 80
+
+---------------------------------------------------------------------------------------------------------
+=>creating the Deployment to deploy the FrontEnd Pod
+
+         kubectl create -f nginx-deploy.yaml
+
+=>creating the NodePort Service
+
+        kubectl create -f nginx-svc-np.yaml
+
+=>creating the LoadBalancer Service
+
+       kubectl create -f nginx-svc-lb.yaml
+
+=>To read the services
+
+        kubectl get service -l app=nginx-app
+
+=>To read the pods
+
+       kubectl get pod -o wide
+
+=>To describe the Services
+
+       kubectl describe service my-service-np
+
+       kubectl describe service my-service-lb
+
+=>Deleting the services
+
+       kubectl delete service my-service-np
+
+       kubectl delete servcie my-service-lb
+
+=======================================================================================================
+DaemonSet:
+==========
+
+    How do a Pod will be created?
+
+                  --->Pod
+                  --->ReplicationController/Replicaset
+                  --->Deployment
+                  --->DaemonSet
+
+=>A Daemonset is an object/Controller to create a Pod just like a      Replicaset/ReplicationController,Deployment
+=>Controller that comes closeto DaemonSet is Relicaset/ReplicationController
+->A DaemonSet ensures that each node should run with one Pod
+                                               (or)
+   A DaemonSet ensures that a Pod should run on each node
+->A DaemonSet will runs number of Pods in the cluster depends on number of nodes available in the cluster & ensures that each node runs with one Pod
+->If a new node added to the cluster then Daemonset will create a new Pod on the new node
+->If any node removed from the cluster then a Pod on the Cluster also will be removed
+->If we remove any Pod in the Cluster then DeamonSet will recreate a new Pod in the Cluster
+->So to remove a Pod we cannot remove directly from the Cluster
+->Deleting a DaemonSet will cleanup the Pods it created
+
+UseCases:
+-------------
+->Node Monitoring daemons/tools : Ex- collectd
+->Log collection daemons : ex-fluentd
+                 etc...
+
+Note:
+-------
+->For example a Node monitoring tool to be run in each node of the cluster will be in the form of Pod can be created by using a Controller/Object known as "DaemonSet"
+->A Single POD to be run compulsary on each node in the Cluster will be acheive by    "DaemonSet'
+
+------------------------------------------------------------------------------------------------
+Manifest/Config File to create a DaemonSet:
+---------------------------------------------------------
+fluentds.yaml
+-----------------
+apiVersion: apps/v1
+kind: DeamonSet
+metadata:                                      #-->Details about the DaemonSet
+      name: fluentd-ds
+spec:
+     selector:                       #-->To associate the Pod with DaemonSet
+         matchLabels:
+               name: fluentd
+     template:  
+         metadata:                            #-->Details about the Pod     
+               labels:
+                  name: fluentd
+         spec:                                    #-->Details about the Container
+             containers:
+             -   name: fluentd
+                  image: gcr.io/google-containers/fluentd-elasticsearch:1.20
+    
+
+--------------------------------------------------------------------------------------
+=>Creating the Pods with DaemonSet Manifest File
+
+           kubetcl create -f fluentds.yaml
+
+=>checking the number of nodes available in the Cluster
+
+          kubectl get nodes
+
+=>Checking the number of Pods created in the Cluster using DaemonSet
+
+         Kubetcl get pod -o wide
+
+=>Checking/Reading the Daemonset
+
+         kubectl get ds
+
+=>To describe the DaemonSet
+
+        kubectl describe ds fluentd-ds
+
+=>To delete a DaemonSet
+
+       kubectl delete ds fluentd-ds
+
+       kubectl get pod
+       [No resources found]
+
+Note:
+-------
+->By deleting the DaemonSet object/Controller then the Pods under that Controller also will be deleted
+
+=======================================================================================================
+
+
+
+
+
+
+

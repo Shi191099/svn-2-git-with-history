@@ -1,0 +1,102 @@
+Kubernetes
+==========
+->Kubernetes will be used to maintain the Containerised Applications/Containers
+
+->Maintaining the Containers means Container Orchestration
+
+->Kubernetes is a Container Orchestration Tool/Software
+
+->Container Orchestration means performing the following actions on the "Containers"
+
+            ->Deployment
+
+            ->Scaling  ==>Increasing the Conatiners/Instances depends on requirement
+                    ->Scaleup =>Increasing the Containers/Application Instances
+                    ->Scaledown=>Decreasing the Containers/Application Instance
+
+            ->Monitoring
+
+            ->High Availability (or) No Down Time
+
+            ->Scalablility (or) High Performance
+
+            ->Disaster Recovery (or) restore & backup
+
+            ->Maintaining Desired State
+
+------------------------------------------------------------------
+Different Orchestration Tools:
+--------------------------------------
+->Kubernetes
+->Docker Swarm
+->Open Shift         etc....
+-------------------------------------------------------------------------------------------------
+Kubernetes Architecture:
+--------------------------------
+->In Kubernetes mainly we can use the following Nodes/Systems/Computers:
+
+                        1)Master Node/Control Plane
+
+                        2)Worker Node
+
+                        3)Workstation Node
+
+->When we install Kubernetes Software/Tool on any System/Machine will becomes a 
+    Master Node/Control Plane
+->The Systems/Machines that will join/add to the Master Node will becomes Worker Nodes
+->All the Worker Nodes & Master Node will be under one Group/Unit is known as 
+   "Kubernetes Cluster"
+->When we add the Systems/Machines to the Master Node then will create one Cluster by     including Master Node & Worker Nodes
+->To give input to  the Master Node for Controlling the entire cluster as a Devops Engineer we     can use one System/Machine known as "Workstation Node"
+->The input giving to the Master Node from workstation node we can use a "Manifest File" in     the form of "YAML Format"(YAML Language)
+->Depends on  the input giving to the master node,it will perform the actions on the     Containerised applications as follows:
+
+                         ->Deployment
+                         ->Scalability
+                         ->Monitoring
+                         ->High Performance(or)No Down Time
+                         ->Maintaining Desired State
+                         ->Distaster Recovery(or)restore & backup
+
+->The Workstation Node can be inside the Cluster (or) outside the Cluster also,but Master         Node & Worker Nodes should be under one Kubernetes Cluster  
+->The deployment of Containers/Containerised Applications will be done by Master Node on     the Worker Nodes
+
+------------------------------------------------------------------------------------
+Components of Master Node:
+=========================
+->The following componenets are present inside the Master Node
+
+                    =>API Server
+                    =>etcd (Cluster Storage)
+                    =>Scheduler
+                    =>Controller Manager
+
+------------------------------------------------------------
+Components of Worker Node:
+=========================
+->The following components are present inside the Worker Node
+
+                    =>Kubelet
+                    =>Kube-Proxy
+                    =>Container Engine/Runtime(Docker)
+
+----------------------------------------------------------------------------------------------------------
+Note:
+-------
+->The Master Node will deploy the Containers to the Worker Nodes in the form/format of  "POD"
+->POD internally contains the Container/Containers
+->POD is a automic unit of Scheduling in Kubernetes
+->In kuberenets we cannot deploy/run the containers directly,we should deploy the Containers inside the PODs only
+->POD Contains Single Container or multiple Containers
+->POD that contains Multiple Containers known as "Tight Coupling"
+->PODs that contains Single Container known as "Loose Coupling"
+->POD will have IP Address where as Containers inside the POD will have Port Number
+->To access/communicate with the Containarised Appications we can use IP Address of the POD & Port Number of the Container
+->Containers that are Communicating with in the Single POD is known as 
+    "Intra-Pod Networking"
+->Containers that are present in different PODs Communicating with each other is known as     "Inter-Pod Networking"
+->In case of Virtualisation "VM" is the automic unit of scheduling
+->In case of Docker "Container" is the automic unit of scheduling
+->In case of Kubernetes "POD" is the automic unit of scheduling,that is in kubernetes to    deploy any thing we should use POD only
+
+====================================================================================================
