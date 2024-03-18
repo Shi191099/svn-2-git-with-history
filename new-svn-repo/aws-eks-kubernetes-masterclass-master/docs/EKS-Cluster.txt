@@ -1,0 +1,184 @@
+EKS Cluster Set-up
+
+----------------------------------------------------
+Steps Involved:
+Step 1: Create IAM role for EKS Cluster
+Step 2: Create Dedicated VPC for the EKS Cluster
+    Create Public and Private Subnet using CloudFormation : https://amazon-eks.s3.us-west-2.amazonaws.com/cloudformation/2020-07-23/amazon-eks-vpc-private-subnets.yaml
+Step 3: Create EKS Cluster
+Step 4: Install & Setup IAM Authenticator and Kubectl Utility
+Step 5: Create IAM Role for EKS Worker Nodes
+Step 6: Create Worker nodes
+Step 7: Deploying Demo Application
+
+#############################################
+
+1. IAM - roles
+
+   select service ' EKS-cluster ' --> next permission
+    click next tags --> tags optional 
+
+Role Name --> EKS-Cluster-POC
+##################################################
+
+Check VPC
+
+2. Cloudformation to create vpc
+
+cloudformation --> create stack --> specify template ---> specify stack details ---> configure stack options  --> create Stack
+
+########################################################
+open VPC and check new one VPC is created or not
+
+3. EKS ---> 
+        create cluster --->  Name ---> version ---> role (eks-cluster-poc) ---> Next
+
+        select correct vpc which we create by cloudformation
+        eks-poc-stack-vpc ---> default subnet ---> SG create by cloudformation (eks-poc-stack-SG) ---> choose cluster IP (IPV4) 
+        
+Cluster endpoint access
+------------------------
+        Public --> The cluster endpoint is accessible from outside of your VPC. Worker node traffic will leave your VPC to connect to the endpoint.
+        public + private --> The cluster endpoint is accessible from outside of your VPC. Worker node traffic to the endpoint will stay within your VPC.
+        private --> The cluster endpoint is only accessible through your VPC. Worker node traffic to the endpoint will stay within your VPC.
+----------------------------------------------------------------
+        public & private ---> next
+
+       Configure logging ---> leave all and create cluster
+
+when it's active
+----------------------------------------------------------------
+################################################################
+
+4. create ec2
+
+    install aws cli --> apt install aws-cli
+                    aws configure --> credentials
+
+----------------------------------------------------------
+##########################################################
+
+search aws cli authenticator
+5. Installing aws-iam-authenticator
+
+         curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+
+         chmod +x ./aws-iam-authenticator
+       
+         mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+
+          aws-iam-authenticator
+--------------------------------------------------------------
+https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html
+--------------------------------------------------------------
+
+6. install kubectl for aws
+
+   see the version in which version u created cluster, then copy link and paste to shell
+
+           curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+
+            kubectl version --short --client
+
+https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
+###################################################################
+
+fix connection refused
+
+aws eks --region us-east-1 update-kubeconfig --name eks-Poc-Cluster         
+
+export KUBECONFIG=~/.kube/config
+
+kubectl get svc
+---------------------------------------------------------------------
+##################################################################
+
+creating IAM role for worker node
+
+8. IAM Role
+
+create Role
+   give policy ---> EKS-CNI, Ec2ContainerReadOnly, EKSWorkerNode
+
+goto EKS ---> select cluster which we create --> compute --> Add Node Group
+    
+     add Node group ---> name ---> Node IAM Role ---> Next
+     AMI type --> Capacity type --> Instance type --> Disk size --> Node group scaling configuration --> node group update configuration --> next
+     leave subnets default --> next
+Done
+
+
+wait got a call 
+
+
+
+####################################################################
+
+    1  aws configure
+    2  apt install awscli
+    3  aws configure
+    4  aws iam list-users
+    5  aws ls s3
+    6  ll
+    7  aws configure
+    8  kubectl get svc
+    9  nano kube
+   10  kubectl get svc
+   11  curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl
+   12  ls
+   13  chmod +x ./kubectl
+   14  kubectl version --short --client
+   15  chmod +x ./kubectl
+   16  kubectl version --short --client
+   17  sudo su -
+   18  kubectl get pods
+   19  service kubelet status
+   20  kubectl get pods
+   21  sudo su -
+   22  aws s3 ls
+   23  aws iam list-users
+   24  aws iam list-groups
+   25  aws sts get-caller-identity
+   26  curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+   27  chmod +x ./aws-iam-authenticator
+   28  mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+   29  aws-iam-authenticator help
+   30  curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl
+   31  chmod +x ./kubectl
+   32  mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+   33  kubectl version --short --client
+   34  kubectl get svc
+   35  aws eks --region us-east-1 update-kubeconfig --name eks-Poc-Cluster
+   36  kubectl get svc
+
+   39  export KUBECONFIG=~/.kube/config
+   40  kubectl get svc
+   41  kubectl get nodes
+   42  kubectl get ns
+   43  history
+   44  kubectl get nodes
+   45  kubectl get nodes --watch
+   46  kubectl get svc
+   47  kubectl create deployment web-war --image=shikashi/web-war
+   48  kubectl get pod
+   49  kubectl expose deployment web-war --type=LoadBalancer --port 8091
+   50  kubectl get svc
+   51  apt install git -y && git clone https://github.com/learnitguide/kubernetes-knote.git
+   52  ls
+   53  cd kubernetes-knote/
+   54  ls
+   55  nano knote.yaml
+   56  history
+
+
+ 100  nano knote.yaml
+  101  nano mongo.yaml
+  102  kubectl apply -f mongo.yaml && kubectl apply -f knote.yaml
+  103  kubectl get pods -o wide
+  106  kubectl get svc
+
+
+
+  113  nslookup a7e7ce87a5db74844b19127893b8cd45-1979303277.us-east-1.elb.amazonaws.com
+  114  curl a7e7ce87a5db74844b19127893b8cd45-1979303277.us-east-1.elb.amazonaws.com

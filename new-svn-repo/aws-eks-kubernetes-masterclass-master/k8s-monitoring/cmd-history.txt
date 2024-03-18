@@ -1,0 +1,27 @@
+yum update -y
+aws configure
+curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.7/2023-11-14/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+echo 'export PATH=$HOME/bin:$PATH' >> ~/.bash_profile
+kubectl version --client
+aws eks update-kubeconfig --region us-west-2 --name eks-demo
+alias k=kubectl
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts -n app
+helm repo update -n app
+helm install prometheus prometheus-community/prometheus -n app
+k get pod -n app
+kubectl edit svc prometheus-server -n app
+k get svc -n app
+helm repo add grafana https://grafana.github.io/helm-charts -n app
+helm repo update -n app
+helm install grafana grafana/grafana -n app
+kubectl get secret --namespace app grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+kubectl get svc grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}' -n app
+k get pod -n app
+k get svc -n app
+kubectl edit svc grafana -n app 
+k get svc -n app

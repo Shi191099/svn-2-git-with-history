@@ -1,0 +1,138 @@
+ReplicationController:
+-----------------------------
+->"Replication" means "Duplication"
+->ReplicationController will be used to run the multiple POD's of same Containerised Applications known as "Replication" or "ReplicaSet"
+->ReplicationController will be used to maintain the desired state/replicaset of the POD's
+->ReplicationController will acheive the following features in kubernetes Cluster
+
+                    1)Higher Availability (or) No Down Time
+
+                    2)Scalability (or) Higher Performance
+
+                                -->ScaleUp
+                                -->ScaleDown
+
+->The above features will be applicable to the Containerised Applications that are running     inside the POD's
+->ReplicationController ensures that a specified number of Pods are running at any time
+         ->if there are excess Pods,they get killed and viceversa
+         ->New Pods are launched when they get fail,get deleted or terminated
+->Replication Controllers and Pods are associated with "labels"
+->Creating a "rc" or "ReplicationController" with count of 2 ensure that is always available
+->ReplicationController is one of the Component of Kubernetes Cluster used to define the     Replication of POD's
+----------------------------------------------------------------------------------------------------------------
+CRUD Operations on the ReplicationController using YAML Language/File:
+-----------------------------------------------------------------------------------------------
+->we can create the ReplicationController using "Manifest file" using YAML Language
+->A file in which we can write a YAML Code is known as "Manifest file"/"Config file"
+
+writing the Manifest file using YAML Code to creat a ReplicationController:
+------------------------------------------------------------------------------------------------
+nginx-rc.yaml:
+------------------
+apiVersion: v1
+kind: ReplicationController
+metadata:                                //--->Details of the ReplicationController
+      name: nginx-rc
+      labels:
+          app:nginx-app
+spec:
+    replicas: 3                          //--->Represents number of POD's to be run in the Cluster
+    selector:
+        app: nginx-app             //--->used to associate the ReplicationController with POD
+    template:
+        metadata:                       //--->Details of the POD 
+              name: nginx-pod
+              labels:
+                 app: nginx-app
+        spec:                              //-->Details of the Container runs inside the POD
+            containers:
+            -   name:nginx-container
+                image: nginx
+                ports:
+                -   containerPort: 80
+
+---------------------------------------------------------------------------------------------------
+=>Creating(C) the ReplicationController using YAML File
+
+         kubectl create -f nginx-rc.yaml
+
+=>Reading(R) the POD's created using ReplicationController
+
+        kubectl get pods
+
+                  (or)
+
+       kubectl get po -l app=nginx-app    //--->reading the Pods with labels
+
+                 (or)
+
+      kubectl get po -o wide      //----->complete details about Pods
+
+
+      kubectl describe rc nginx-rc     //---->getting details about ReplicationController(rc)
+
+==========================================================================
+ScalingUp the Pods/Application Instances using ReplicationController:
+-----------------------------------------------------------------------------------------
+
+     kubectl scale rc nginx-rc --replicas=5     //--->scaleup the pods to 5 instances
+
+     kubectl get rc nginx-rc              //---->checking the rc for increased instances/pods
+
+     kubectl get pod -o wide          //---->checking the running pods with details
+
+     
+=========================================================================
+ScalingDown the Pods/Application Instances using ReplicationController:
+----------------------------------------------------------------------------------------------
+
+      kubectl scale rc nginx-rc --replicas=3   //--->scaledown the pods to 3 instances
+
+      kubectl get rc nginx-rc              //---->checking the rc for increased instances/pods
+
+     kubectl get pod -o wide          //---->checking the running pods with details
+
+=========================================================================
+=>Deleting(D) the ReplicationController:
+----------------------------------------------------
+
+   kubectl delete -f nginx-rc.yaml 
+
+   kubectl get rc
+     (no resources found)
+
+   kubectl get po -l app=nginx-app
+     (no resource found)
+
+-----------------------------------------------
+Note:
+-------
+->If we delete the replicationcontroller then all the pods under that controller also will be deleted
+
+============================================================================
+Deployments:
+============
+->Deployment is an object used to create the POD's only like a ReplicationController
+->Deployment contains the features as follows:
+
+                    =>ReplicationController(replicas)
+                    =>Upgrades (or) Rollout
+                    =>Rollback
+                    =>Scaleup & Scaledown
+                    =>Pause & Resume
+
+-----------------------------------------------------
+POD->App1->v1 =====>v2  ==>Without Any Downtime
+
+-----------------------------------
+Note:
+-------
+=>Deployments will be used to perform the following actions:
+
+           ->ugrading the running applications of Cluster from one version to other version
+           ->upgrading will done with zero downtime
+           ->Rollback upgrade to previous stable release
+           ->upgrade sequentially one after the other
+           ->Pause & Resume the Upgrade Process
+
+=====================================================================

@@ -1,0 +1,360 @@
+=========================================================================
+Components of Master Node:
+=========================
+->"API Server" will used to connect with the master node from the Workstation Node in which input in the form of YAML language can be given to the API Server,that is the entire Kuberenetes cluster will be controlled by the API Server in the Master Node
+->"Scheduler" will be responsible to connect with API Server & will schedule the deployments on the worker node with the help of kubelet on the Worker Nodes depends on the Input given by the Devops Engineer in the form of YAML Language
+->"Etcd" is the brain of Kubernetes Cluster which will store the Completes details of the Cluster & it is also known as "Cluster Storage" (or) Database
+->"Controller Manager" will check the Cluster status about the "PODS",that is the running PODs & desired PODs will be matching or not,if not then it will tell to the API Server about the status of the Cluster,then API Server will maintain the Desired State of the Cluster
+===================================================
+Components of Worker Node:
+=========================
+->"Kubelet" is a Kuberneters agent present in every Worker Node to create the PODs that are requested by the API Server through "Scheduler"
+->"Kube-Proxy" will be reponsible for the "Kubernetes Networking/POD Networking",that is assigning the IP Addresses to the PODs & creating networks b/w the PODs & alos connecting the POD Networks with Internet(Outside Networks)
+->"Container Runtime" that is majorly "Docker" tool will be reponsible to create/run the Containers inside the PODs in every Worker Node
+=====================================================
+Note:
+-------
+->To connect with Kubernetes Cluster from the Worker Node we have different options as     follows:
+
+                                      1)GUI (or) UI
+
+                                      2)CLI   ----------------->Kubectl
+
+->"Kubectl" is the "Command Line Interface" tool or utility used to talk with "API Server" or    "Kubernetes Cluster"
+->Majorly we can use the "CLI",that is "Kubectl" option only to connect with 
+   "Kubernetes Cluster"     
+
+=========================================================================
+Note:
+=====
+->Kubernetes Cluster/Service will be available directly as a Cloud Service in the Major Cloud environments as follows:
+ 
+                 Cloud Environment                         Kubernet Services
+                 -------------------------                 -----------------------------------
+
+                           =>AWS -----------------> EKS (Elastic Kubernets Service)
+
+                           =>AZURE ---------------> AKS (Azure Kubernetes Service)
+
+                           =>GCP     ----------------> GKS (Google Kubernetes Service)
+
+----------------------------------------------------------------------------
+Note:
+-------
+->The Kubernetes Cluster we can also create manually in our environments/Infrastructure
+                                                                     (or)
+->Installation/creation of Kubernetes Cluster manually from scratch level by following the    below steps
+->To create the Kuberenetes Cluster Manually we should use a Tool/Utility known as     "Kubeadm"
+
+   Kubernetes Cluster Setup using "Kubeadm" in Production Environment:
+  --------------------------------------------------------------------------------------------
+
+      =>Master Node
+                 -->API Server  ---------------->POD------->Container--->Docker Image
+                 -->etcd            ---------------->POD------->Container--->Docker Image
+                 -->Scheduler  ---------------->POD------->Container--->Docker Image
+                 -->Controller Manager----->POD------->Container--->Docker Image
+
+                 -->Kubelet
+                 -->Kube-Proxy  ---------------->POD------->Container--->Docker Image
+                 -->Docker
+                 -->Kubectl
+                 -->kubeadm
+
+       =>Worker Node
+                 -->Kubelet
+                 -->Kube-Proxy  ---------------->POD------->Container--->Docker Image
+                 -->Docker(Container Engine)
+                 -->Kubectl
+                 -->kubeadm
+
+       =>Workstation Node
+                 -->Kubectl
+               
+========================================================================
+Installation or Creation of Kubernetes Cluster using "Kubeadm"
+---------------------------------------------------------------------------------
+pre-requisites:
+-------------------
+->Machines/Systems with minimum following Configuration
+
+                 -->3GB RAM or more
+
+                 -->3 CPU's or more
+
+----------------------------------------------------------
+Steps to create Kubernetes Cluster:
+---------------------------------------------
+->create the Virtual Machines/Physical Machines to be use in Kubernetes(K8s) Cluster
+->Disable SWAP & SELinux on all Virtual Machines/Physical Machines
+->Install Kubeadm,Kubelet,Kubectl & Docker on all machines(Master & Worker Nodes)
+       ->Enable & Start Docker,Kubelet on all Machines
+->Initialise the Master Node
+->Configure the POD Network
+->Join/Add the Worker Nodes to the Master Node to create a Kubernetes(K8s) cluster
+
+=============================================================================
+Steps to create Kubernetes Cluster using "kubeadm"
+===========================================
+step1: -------->Disable SWAP on all Nodes
+--------
+                        swapoff -a
+
+step2:-------->Disable SELinux on all Nodes
+--------
+
+                         setenforce 0
+                         sed -i 's/enforcing/disabled/g' /etc/selinux/config
+                         grep disabled /etc/selinux/config | grep -v '#'
+
+step3:---------> Insatll Docker
+--------
+                         yum update -y
+                         yum install -y docker
+
+                        systemctl enable docker
+                         systemctl start docker
+                         systemctll status docker
+
+step4:---------->Install Kubeadm,Kubelet,kubectl
+--------
+=>Add Kubernetes Repo
+
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kube*
+EOF
+
+=>Install Kubeadm,Kubelet,kubectl
+
+          yum install -y kubeadm kubelet kubectl  --disableexcludes=kubernetes
+
+=>Enable & start Kubelet
+
+         systemctl enable kubelet && systemctl start kubelet          
+
+---------------------------------
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sudo sysctl --system
+----------------------------------
+Step 5: ---->Initialising Master Node
+---------
+
+                            kubeadm init
+=============================================================================
+Note:
+-------
+->To practice/Lab setup locally of Kubernetes Cluster we can install/create Kubernetes Cluster    using "minikube"
+->"minikube" is a Single Node Cluster Setup with Master Processes & Worker Processes used for practicing the Kubernetes Concepts in local Machine
+
+============================================================================ ==========================
+Installation of Kubernetes Cluster using "minikube"
+------------------------------------------------------------------
+->Minikube will install/create kubernetes cluster in any Virtualisation Manager like VirtualBox,OracleBox,Docker etc...
+->To install kuberenetes Cluster using minikube,we should install any virtualisation manager as we showed above
+
+Linux Machine:
+--------------------
+
+step1:
+--------
+->install any Virtualisation Manager/Tool like Docker
+
+step2:
+--------
+->install minikube
+
+               sudo yum install minikube
+
+step3:
+--------
+->start minikube
+
+               minikube start 
+
+                          (or)
+
+              minikube start --driver=docker
+
+--------------------------------------------------------------------------------------------------
+Windows Machine:
+-------------------------
+
+step1:
+--------
+->install any Virtualisation Manager/Tool like Docker by following below document link
+
+                
+                             https://minikube.sigs.k8s.io/docs/drivers/docker/
+
+step2:
+--------
+->install minikube graphically by following the below document link
+
+                    https://minikube.sigs.k8s.io/docs/start/
+
+step3:
+--------
+->open Command Prompt cmd in your windows machine
+
+               minikube start
+
+                       (or)
+
+              minikube start --driver=docker
+--------------------------------------------------------------------------------------------------------------------
+Note:
+-------
+->After installing kubernets Cluster in which to check the details about the cluster we can use the following Commands
+
+                 -->  kubectl cluster-info
+
+                 --> kubectl get pod
+
+                 -->kubectl get ns
+                              (or)
+                 -->kubectl get namespace
+
+
+=====================================================================
+Note:
+-------
+->By following the above steps that can be in Linux Machine or Windows Machine a Minikube single Node Cluster will be create with master processes & Worker Node Processes
+->By installing minikube Kubernetes Cluster,Kubectl also will be installed as a dependency to the minikube cluster,that is not required to install kubectl seperatly
+
+=====================================================================
+Concepts/Components/Applications in Kubernetes:
+---------------------------------------------------------------------
+1)Namespaces
+
+2)Pods
+
+3)ReplicationController
+
+4)Deployments
+
+5)Services
+
+6)Storage
+
+============================================================================
+Note:
+-------
+->"API" stands for "Application Programming Interface"
+->Every Component like Namespace,POD,RelicationController etc.. are the Applications in the Kubernetes Cluster & to interact with any Application we shoud use an API of API Server in the Master Node
+->To interact with any API in the API Server of Master Node can be done with the following operations known as CRUD operations
+
+                                            CRUD operations
+                                                         |
+      ---------------------------------------------------------------------------------------
+           |                                 |                        |                      |           
+     C -create                     R-read                U-update                 D-delete
+
+-------------------------------------
+->To work with any component/Application of Kuberenets Cluster will be done in two ways as follows:
+
+                                               1)Command Oriented   [cmd]
+
+                                               2)using YAML Language [YAML]
+
+=>Then the CRUD Operations will be use in the above two ways as follows
+
+
+                => Create(C) :
+
+                                    cmd       ------>create
+
+                                     YAML    ------>create yaml
+
+               => Read(R) :
+
+                                    cmd        ------>get
+
+                                     YAML     ------>No option
+
+               => Update(U) :
+
+                                    cmd        ------->edit
+
+                                     YAML     ------->apply yaml
+
+               => Delete(D) :
+
+                                    cmd        ------->delete
+
+                                     YAML     ------->delete yaml
+
+=======================================================================================================
+
+
+sudo su
+
+Now install docker
+
+sudo apt update && apt -y install docker.io
+
+install Kubectl
+
+curl -LO https://storage.googleapis.com/kubern... -s https://storage.googleapis.com/kubern... && chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+
+install Minikube
+
+curl -Lo minikube https://storage.googleapis.com/miniku... && chmod +x minikube && sudo mv minikube /usr/local/bin/
+
+           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

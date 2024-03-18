@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webwar
+  labels:
+    app: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-war
+  template:
+    metadata:
+      labels:
+        app: web-war
+    spec:
+      containers:
+      - name: web-war1
+        image: shikashi/web-war
+        ports:
+        - containerPort: 8090

@@ -1,0 +1,50 @@
+#############################################
+		# Please edit the object below. Lines beginning with a '#' will be ignored,
+		# and an empty file will abort the edit. If an error occurs while saving this file will be
+		# reopened with the relevant failures.
+		#
+		apiVersion: v1
+		kind: Service
+		metadata:
+		  annotations:
+			meta.helm.sh/release-name: grafana
+			meta.helm.sh/release-namespace: app
+			service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+		  creationTimestamp: "2023-11-20T11:15:46Z"
+		  finalizers:
+		  - service.kubernetes.io/load-balancer-cleanup
+		  labels:
+			app.kubernetes.io/instance: grafana
+			app.kubernetes.io/managed-by: Helm
+			app.kubernetes.io/name: grafana
+			app.kubernetes.io/version: 10.1.5
+			helm.sh/chart: grafana-7.0.6
+		  name: grafana
+		  namespace: app
+		  resourceVersion: "701795"
+		  uid: f9737585-4d9a-46ec-a00e-eed66d1b1cfa
+		spec:
+		  allocateLoadBalancerNodePorts: true
+		  clusterIP: 10.100.178.77
+		  clusterIPs:
+		  - 10.100.178.77
+		  externalTrafficPolicy: Cluster
+		  internalTrafficPolicy: Cluster
+		  ipFamilies:
+		  - IPv4
+		  ipFamilyPolicy: SingleStack
+		  ports:
+		  - name: service
+			nodePort: 31437
+			port: 80
+			protocol: TCP
+			targetPort: 3000
+		  selector:
+			app.kubernetes.io/instance: grafana
+			app.kubernetes.io/name: grafana
+		  sessionAffinity: None
+		  type: LoadBalancer
+		status:
+		  loadBalancer:
+			ingress:
+			- hostname: af97375854d9a46eca00eeed66d1b1cf-1787984606.us-west-2.elb.amazonaws.com

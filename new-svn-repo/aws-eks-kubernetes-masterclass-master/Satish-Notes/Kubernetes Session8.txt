@@ -1,0 +1,201 @@
+Kubernetes Storage Volumes:
+=========================
+
+=>Storage Volumes in kubernetes will be used for the Data Persistancy of the Pods
+=>Data Persistancy means permanent storage
+=>when the Pod dies/removes then the data of the containers inside the pod also deleted,so     to store the data of the container inside the pod permanently we require a storage location     known as storage volumes in kubernetes
+=>Storing the data of the pods in the storage volumes of kubernetes is known as 
+    "Data Persistancy"
+=>Pods of the kubernetes cluster is "stateless",that means data of the pods will deleted when     the pods deleted
+=>So to provide "statefullness" for the Pods in the kuberenetes Cluster,we can use "storage     volumes",that means storing the data of the Pods permanently byond life cyle of pods
+=>"stateless" means losing the Data beyond the life cycle of Pods
+=>"statefullness" means storing the Data Permanently beyond the life cycle of pods,that is if        Pod dies & creates again then the same data should access in the Pod
+
+--------------------------------------------------------------------------------
+Storage Technologies:
+----------------------------
+->In general different types of storage technologies are as follows:
+
+       =>Block Storage
+                   ->Host Based
+                   ->External Host Based
+
+       =>object Storage
+                  ->AWS s3
+                  ->Git repo
+                  ->Azure file
+
+       =>Network Storage
+                 ->NFS
+                 ->EFS
+
+-------------------------------------------------------------------
+Note:
+-------
+->Kubernetes Storage Volumes will be used to store the Data of the Pods in the different storage technologies as listed above
+
+--------------------------------------------------------------------
+Kubernetes Storage Volumes:
+--------------------------------------
+ =>The Storage Volumes are divided in to two catagories as follows:
+
+                       1)Ephemeral  --->same lifetime as pods
+                                                         ->After Pod dies volume also delete
+
+                       2)Durable       --->Beyond the Pods lifetime
+                                                         ->After Pod dies also volume will be there
+
+=>The different types of Storage Volumes in kubernetes that are divided in to above two      catagories are as follows:
+
+             ->emptyDir
+             
+            ->hostPath
+
+            ->gcePersistentDisk
+
+           ->persistentvolumeClaim
+
+                         etc....
+
+-----------------------------------------------------------------------------------------
+Note:
+-------
+->In the above storage volumes "emptyDir" & "hostPath" types will be store the Data of the Pods in the BlockStorage Technology,that is in the Node(Host) in which the Pod runs in the Kubernetes Cluster
+->"emptyDir" will comes under the catagory of "Ephemeral" volumes
+->"hostPath" will comes under the catagory of "Durable" volumes
+->"BlockStorage" Technology will be used to store the Data of the Containarised Application of Pod within the FileSystem of Node in which the Pod runs
+
+-----------------------------------------------------------------------------------------------------------------------
+emptyDir:
+========
+->It will creates an empty directory in the Node FileSystem in which the Pod created & that directory will be mounted inside the Pod to store the Data of the Containarised Application
+->Untill the Pod runs in the Node that empty directory will be there in that node where as if Pod dies/deleted then that empty directory also will be deleted
+->emptyDir is a Ephemeral type of volume which is also known as "temparary space"
+
+-------------------------------------------------------------------------------------------------
+Manifest/Config file to create an emptyDir along with Pod:
+---------------------------------------------------------------------------
+test-ed.yaml
+----------------
+apiVersion: v1
+kind: Pod
+metadata:
+      name: test-ed
+spec:
+    containers:
+    -   image: nginx
+        name: test-container
+        volumeMounts:
+        -   name: cache-volume
+            mountPath: /cache
+        volumes:
+        -   name: cache-volume
+            emptyDir: {}
+
+----------------------------------------------------------------------------------------------
+Creating the Pod with emptyDir using Manifest file:
+------------------------------------------------------------------
+
+    kubectl create -f test-ed.yaml
+
+=>Reading the Pod
+
+    kubectl get pod
+
+=>checking the mountpoint inside the Pod
+
+     kubectl exec test-ed df /cache
+
+=>To describe the Pod
+
+     kubectl describe pod test-ed
+
+=>To delete the Pod
+
+     kubectl delete pod test-ed
+
+======================================================================
+hostPath:
+========
+->hostPath is one of the Kubernetes Storage Volumes
+->It will use the BlockStorage Technology to store the data of the Pods,that in the same node    in which the Pod runs
+->hostPath mounts a file or directory from the host/node filesystem into your Pod to store    the data
+->Remains even after the pod is terminated
+->similar to docker volumes
+
+-----------------------------------------------------------------------------------
+Manifest/Config file to create an hostPath along with Pod:
+---------------------------------------------------------------------------
+test-hp.yaml
+-----------------
+apiVersion: v1
+kind: Pod
+metadata:
+      name: redis-hostPath
+spec:
+    containers:
+         -  name: redis-container
+             image: redis
+             volumeMounts:                     #--->MountPoint Details inside the Pod
+             -   mountPath: /test-mnt
+                  name: test-vol
+             volumes:                           #--->Details about the directory in the FileSystem of  node
+             -   name: test-vol
+                 hostPath:
+                      path: /test-vol
+
+----------------------------------------------------------------------------
+ 
+               MountPoint (inside the Pod):  /test-mnt
+               storage volume                      : /test-vol (directory on the node in which Pod runs)
+
+----------------------------------------------------------------------------------------------------------------------
+Creating the Pod with hostPath using Manifest file:
+------------------------------------------------------------------
+
+     kubectl create -f test-hp.yaml
+
+Reading the Pod:
+----------------------
+
+      kubectl get pod
+
+ checking the mountpoint inside the Pod:
+-----------------------------------------------------
+
+     kubectl exec redis-hostPath df /test-mnt
+
+To enter in to the Pod:
+----------------------------
+
+    $kubectl exec redis-hostpath -it -- /bin/sh     //--->To enter inside the pod
+    #cd /test-mnt                               //-------->to enter inside the mount point
+    #echo "from pod" > from-pod.txt   //-->to create the file inside the pod
+    #cat from-pod.txt                             //-->to open the created the file
+        from pod
+
+---------------------------------------------------------------------------
+Note:
+-------
+->The files/data we created inside the mount point/directory of the pod will be stored in to the hostPath volume/directory of the node in which pod runs,for example a mount point we created inside the pod is /test-mnt and the data we stored in this mount point will be stored in to the /test-vol directory(hostPath) of the node
+->So if pod dies then the data of that pod still available in the hostPath volume,that is test-vol of the node is known as "Data Persistancy"
+
+========================================================================================================
+
+
+   
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+

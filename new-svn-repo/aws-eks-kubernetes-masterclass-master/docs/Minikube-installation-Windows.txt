@@ -1,0 +1,15 @@
+install Docker Desktop
+
+for that install 
+Download the Linux kernel update package
+
+https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
+
+Windows Subsystem for Linux update setup wizard.
+
+for minikube installation 
+run
+--------------- winget install minikube
+
+Minikube Docs ---------------------
+              https://minikube.sigs.k8s.io/docs/start/

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webwar-svc
+  labels:
+    app: web-war
+spec:
+  selector:
+    app: web-war
+  type: LoadBalancer
+  ports:
+  - nodePort: 31000
+    port: 80
+    targetPort: 8090

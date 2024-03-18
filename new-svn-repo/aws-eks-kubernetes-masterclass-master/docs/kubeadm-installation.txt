@@ -1,0 +1,85 @@
+  1  yum update -y
+    2  swapoff -a
+--------------------------------------------------------------------------
+    3  vi /etc/fstab
+               
+               # /etc/fstab: static file system information.
+               #
+               # Use 'blkid' to print the universally unique identifier for a
+               # device; this may be used with UUID= as a more robust way to name devices
+               # that works even if disks are added and removed. See fstab(5).
+               #
+               # <file system> <mount point>   <type>  <options>    <dump>  <pass>
+               # / was on /dev/sda1 during installation
+LABEL=cloudimg-rootfs   /        ext4   discard,errors=remount-ro       0 1
+LABEL=UEFI      /boot/efi       vfat    umask=0077      0 1
+
+               # swap was on /dev/sda5 during installation
+               #UUID=d0200036-b211-4e6e-a194-ac2e51dfb27d none         swap sw           0    0
+
+-------------------------------------------------------------------------
+    4  vi /etc/ufw/sysctl.conf
+    5  cd /etc/ufw
+    6  yum install epel-release -y
+    7  sudo amazon-linux-extras install epel
+    8  ufw enable
+    9  yum installl ufw -y
+   10  yum install ufw -y
+   11  ufw enable
+   12  vi /etc/ufw/sysctl.conf
+   13  exit
+   14  yum update -y && yum install docker
+   15  yum update -y && install -y apt-transport-https
+   16  yum update -y && yum install -y apt-transport-https
+   17  which http
+   18  service http start
+   19  service httpd start
+   20  yum install httpd -y
+   21  service httpd start
+   22  yum install cur;
+   23  yum install cur;l
+   24  yum install curl
+   25  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+   26  apt-get install ebtables ethtool
+   27  yum install ebtables ethtool
+   28  sudo su -
+   29  history
+-------------------------------------------------------------------
+-------------------------------------------------------------------
+
+
+   1  apt update
+    2  swapoff -aswapoff -a
+    3  swapoff -a
+    4  cat /proc/meminfo
+    5  vi /etc/fstab
+    6  vi /etc/ufw/sysctl.conf
+    7  exit
+    8  apt-get install ebtables ethtool
+    9  exit
+   10  apt-get update
+   11  apt-get install -y docker.io
+   12  apt-get update
+   13  apt-get install -y apt-transport-https
+   14  apt install curl -y
+   15  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+   16  cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb http://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+
+   17  apt-get update
+   18  apt-get install -y kubelet kubeadm kubectl
+   19  kubectl get svc
+   20  kubectl version -o json
+   21  docker ps | grep kube-apiserver
+   22  kubectl cluster-info
+   23  kubectl cluster-info dump
+   24  curl localhost:8080
+   25  kubectl config view
+   26  sudo kubeadm init
+   27  history
+
+------------------------------------------------------------------
+-------------------------------------------------------------------
+
+https://www.mirantis.com/blog/how-install-kubernetes-kubeadm/
